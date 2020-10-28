@@ -49,28 +49,45 @@ for link in myLinks:
     
     # Obtenemos todas las filas de la tabla. Cada fila corresponde a un sorteo.
     rows = table.find_all('tr')
-    
+  
     semana = 1
     
     for row in rows:
         # Ignoramos las filas que no nos interesan
-        cadenas = ["*", "SEM.", "NÚMEROS", "Lluvia de Millones"]
-        if row.find('td') and any(cadena in row.td.text for cadena in cadenas) == False:            
+        cadenas = ["*", "SEM.", "NÚMEROS", "Lluvia de Millones","FECHA","SORTEO","COMBINACION GANADORA","2010","2009","2008","2007","2006","2005","2004","ESTRELLAS"]        
+     
+        if row.find('td') and (row.find('td', attrs={'colspan':'9'}) == None) and any(cadena in row.td.text for cadena in cadenas) == False:
      
             sorteo = [year]
             
+            
+            
             # Algunas semanas tienen más de un sorteo a la semana
             if ((row.find('td', attrs={'rowspan':'2'}) != None) or (int(year) < 2011) or (int(year) == 2011 and int(semana) < 19)) or (row.find('td', attrs={'rowspan':'4'}) != None):
-                semana = row.td.text
-            else:
-                sorteo.append(semana)
-            
+                
+                    semana = row.td.text
+              
+            else:            
+                
+                
+                    sorteo.append(semana)                    
+                      
+    
+                    
+                    
             # Obtenemos todas las columnas de la fila
-            cols = row.find_all('td')
-            for ele in cols:
+            
+            cols = row.find_all('td')           
+            
+                             
+            for ele in cols:               
                 numero = ele.text
                 if numero != '\n':
                     sorteo.append(numero)
+                    
+                    
+                                
+                
             
             # Algunos años no tienen campo "Semana" (aquellos que solo tienen un sorteo por semana)
             # Añadimos un valor igual al número de sorteo que corresponde al número de semana
@@ -83,12 +100,13 @@ for link in myLinks:
             
             # Guardamos los resultados de la fila a la lista 'data'
             data.append(sorteo)        
- 
+     
 # Creamos el dataframe en el que guardaremos los datos    
 df = pd.DataFrame(data, columns=["Anyo","Semana","Sorteo","Fecha","Numero1","Numero2","Numero3","Numero4","Numero5","Estrella1","Estrella2","ElMillon"])
 
 
 print(df.head(10))
+
             
 # Guardamos los datos en un fichero csv
 df.to_csv('Resultados_Euromillones.csv', index=False)
